@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ 이거 추가
+import { useNavigate } from "react-router-dom";
+
 
 function ReservationPage() {
   const [reservations, setReservations] = useState([]);
-  const navigate = useNavigate(); // ✅ 이거 추가
+  const navigate = useNavigate();
 
-  // ✅ 로그인 체크 useEffect
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
@@ -14,7 +14,6 @@ function ReservationPage() {
     }
   }, [navigate]);
 
-  // 예약 정보 불러오기
   useEffect(() => {
     const storedReservations = localStorage.getItem("reservations");
     if (storedReservations) {
@@ -51,39 +50,49 @@ function ReservationPage() {
 
   return (
       <div className="container my-4">
-        {reservations.map((res, index) => (
-            <div className="card mb-3" key={index}>
-              <div className="row g-0 align-items-center">
-                <div className="col-12 col-md-3">
-                  <img
-                      src={res.imageUrl}
-                      alt={res.name}
-                      className="img-fluid"
-                      style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                  />
-                </div>
-                <div className="col-12 col-md-7">
-                  <div className="card-body">
-                    <h5 className="card-title">{res.name}</h5>
-                    <p className="card-text">
-                      {formatDate(res.checkin)} ~ {formatDate(res.checkout)}
-                    </p>
-                    <p className="card-text">
-                      <strong>{Number(res.price).toLocaleString()} 원</strong>
-                    </p>
+        {reservations.map((res, index) => {
+          const hotelId = res.hotel?.id || res.hotel?.hotelId || 0;
+          const s3ImageUrl = `https://teama-leemw-s3.s3.ap-northeast-3.amazonaws.com/hotel/img/${hotelId}.jpg`;
+
+          return (
+              <div className="card mb-3" key={index} style={{ height: "200px" }}>
+                <div className="row g-0 h-100">
+                  <div className="col-md-3 h-100">
+                    <img
+                        src={s3ImageUrl}
+                        alt={res.hotel?.hotelName}
+                        className="img-fluid h-100 w-100"
+                        style={{ objectFit: "cover" }}
+                        onError={(e) => {
+                          if (!e.target.src.includes("default.jpg")) {
+                            e.target.src = "/default.jpg";
+                          }
+                        }}
+                    />
+                  </div>
+                  <div className="col-md-7 d-flex flex-column justify-content-center h-100">
+                    <div className="card-body">
+                      <h5 className="card-title">{res.hotel?.hotelName}</h5>
+                      <p className="card-text">
+                        {formatDate(res.checkInDate)} ~ {formatDate(res.checkOutDate)}
+                      </p>
+                      <p className="card-text fw-bold text-primary">
+                        <strong>{res.total.toLocaleString()} 원</strong>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-md-2 d-flex align-items-center justify-content-center h-100">
+                    <button
+                        className="btn btn-danger"
+                        onClick={() => handleCancel(index)}
+                    >
+                      예약취소
+                    </button>
                   </div>
                 </div>
-                <div className="col-12 col-md-2 text-md-end text-center">
-                  <button
-                      className="btn btn-danger"
-                      onClick={() => handleCancel(index)}
-                  >
-                    예약취소
-                  </button>
-                </div>
               </div>
-            </div>
-        ))}
+          );
+        })}
       </div>
   );
 }

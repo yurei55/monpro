@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation , useSearchParams } from "react-router-dom";
 import axios from "axios";
 import SearchSection from "../components/SearchSection";
 import HotelList from "../components/HotelList";
@@ -11,6 +11,10 @@ export default function SearchResultPage() {
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [minRating, setMinRating] = useState("");
+    const [params] = useSearchParams();
+    const checkIn = params.get("checkIn");
+    const checkOut = params.get("checkOut");
+
 
     useEffect(() => {
         const fetchHotels = async () => {
@@ -43,7 +47,6 @@ export default function SearchResultPage() {
                     data.sort((a, b) => b.rating - a.rating);
                 }
 
-
                 setHotels(data);
             } catch (err) {
                 console.error("검색 실패:", err);
@@ -55,8 +58,16 @@ export default function SearchResultPage() {
 
     return (
         <main className="container my-4">
-            <SearchSection />
-            console.log("검색된 호텔 목록:", hotels);
+            <SearchSection
+                defaultCheckIn={checkIn}
+                defaultCheckOut={checkOut}
+                guests={{
+                    rooms: Number(params.get("roomCount") || 1),
+                    adults: Number(params.get("adultCount") || 1),
+                    children: Number(params.get("childCount") || 0),
+                }}
+            />
+
             <div className="row mt-4">
                 {/* 🔍 왼쪽 필터/정렬 */}
                 <div className="col-md-3 mb-4">
@@ -101,7 +112,17 @@ export default function SearchResultPage() {
 
                 {/* 🏨 오른쪽 호텔 리스트 */}
                 <div className="col-md-9">
-                    <HotelList hotels={hotels} showPrice={true} />
+                    <HotelList
+                        hotels={hotels}
+                        showPrice={true}
+                        checkInDate={checkIn}
+                        checkOutDate={checkOut}
+                        guests={{
+                            rooms: Number(params.get("roomCount") || 1),
+                            adults: Number(params.get("adultCount") || 1),
+                            children: Number(params.get("childCount") || 0),
+                        }}
+                    />
                 </div>
             </div>
         </main>

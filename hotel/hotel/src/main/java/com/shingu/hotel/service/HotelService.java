@@ -73,10 +73,23 @@ public class HotelService {
         HotelDetailDto dto = new HotelDetailDto();
         BeanUtils.copyProperties(hotel, dto);
 
+        // 지도 때문에 위도 경도 double로 변경
+        try {
+            String latStr = hotel.getLatitude();
+            String lngStr = hotel.getLongitude();
+
+            dto.setLatitude((latStr != null && !latStr.isBlank()) ? Double.parseDouble(latStr) : null);
+            dto.setLongitude((lngStr != null && !lngStr.isBlank()) ? Double.parseDouble(lngStr) : null);
+        } catch (NumberFormatException e) {
+            dto.setLatitude(null);
+            dto.setLongitude(null);
+        }
+
         List<RoomDto> roomDtos = hotel.getRooms().stream().map(room -> {
             RoomDto r = new RoomDto();
             BeanUtils.copyProperties(room, r);
-            r.setPrice(String.format("₩%,d", room.getPrice()));
+            //r.setPrice(String.format("₩%,d", room.getPrice()));
+            r.setPrice(room.getPrice());
             r.setImageUrl(room.getImageUrl()); // ✅ 이미지 URL 포함
             return r;
         }).collect(Collectors.toList());

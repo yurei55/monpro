@@ -1,13 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function HotelCard({ id, name, price, imageUrl, soldOut, rating, showPrice }) {
+export default function HotelCard({ id, name, price, imageUrl, soldOut, rating, showPrice, guests, checkInDate, checkOutDate }) {
     // S3 이미지 경로 구성
     const s3ImageUrl = `https://teama-leemw-s3.s3.ap-northeast-3.amazonaws.com/hotel/img/${id}.jpg`;
 
     return (
         <div className="card h-100 position-relative">
-            <Link to={`/hotels/${Number(id)}`}>
+            <Link
+                to={`/hotels/${Number(id)}`}
+                state={{ guests, checkInDate, checkOutDate }} // ✅ 여기서 함께 넘김
+            >
                 <img
                     src={s3ImageUrl}
                     onError={(e) => {

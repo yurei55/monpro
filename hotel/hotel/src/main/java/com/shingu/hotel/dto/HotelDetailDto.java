@@ -20,9 +20,9 @@ public class HotelDetailDto {
     private String address;
     private String hotelNumber;
     private String homePage;
-    private String latitude;
-    private String longitude;
-    private String rating;
+    private Double latitude;
+    private Double longitude;
+    private Double rating;
 
     private List<RoomDto> rooms;
 }

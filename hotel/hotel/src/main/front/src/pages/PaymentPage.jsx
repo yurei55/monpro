@@ -5,6 +5,8 @@ export default function PaymentPage() {
   const { hotel, room, checkInDate, checkOutDate, guests } = useLocation().state;
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
@@ -112,7 +114,7 @@ export default function PaymentPage() {
 
             <div className="card mb-3">
               <img
-                  src={room.imageUrl || "/puhaha.png"}
+                  src={"/puhaha.png"}
                   className="card-img-top"
                   alt={room.name}
                   style={{ height: "200px", objectFit: "cover" }}

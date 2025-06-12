@@ -31,7 +31,7 @@ public class HotelEntity {
     private String homePage;      // 홈페이지
     private String latitude;      // 위도
     private String longitude;     // 경도
-    private Double rating;        // 평점
+    private double rating;        // 평점
     private String imageUrl;
 
 

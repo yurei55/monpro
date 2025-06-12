@@ -27,6 +27,4 @@ public class HotelController {
     public HotelDetailDto getHotelById(@PathVariable Long id) {
         return hotelService.getHotelDetail(id);
     }
-
-
 }

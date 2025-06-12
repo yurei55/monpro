@@ -1,4 +1,3 @@
-// src/App.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import MainPage from "./pages/MainPage";
@@ -14,25 +13,25 @@ import SearchResultPage from "./pages/SearchResultPage";
 import HotelDetailPage  from "./pages/HotelDetailPage";
 
 function App() {
-  return (
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/search" element={<SearchResultPage />} />  {/* ✅ 추가 */}
+    return (
+        <Router>
+            <Header/>
+            <Routes>
+                <Route path="/search" element={<SearchResultPage />} />  {/* ✅ 추가 */}
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/find"  element={<FindPage />} />
-        <Route path="/join" element={<JoinPage />} />
-        <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/comfirmation" element={<ConfirmationPage />} />
-        <Route path="/orders" element={<ReservationPage />} />
-          <Route path="/" element={<MainPage />} />
-        <Route path="/hotels/:id" element={<HotelDetailPage />} />
-        {/* ...other routes */}
-      </Routes>
-    </Router>
-  );
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/find"  element={<FindPage />} />
+                <Route path="/join" element={<JoinPage />} />
+                <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/confirmation" element={<ConfirmationPage />} />
+                <Route path="/orders" element={<ReservationPage />} />
+                <Route path="/" element={<MainPage />} />
+                <Route path="/hotels/:id" element={<HotelDetailPage />} />
+                {/* ...other routes */}
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

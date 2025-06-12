@@ -79,7 +79,7 @@ import HotelCard from "./HotelCard";
 // ];
 
 // hotels prop 으로 데이터 받기
-export default function HotelList({ hotels, showPrice }) {
+export default function HotelList({ hotels, showPrice, checkInDate, checkOutDate, guests }) {
     if (!hotels || hotels.length === 0) {
         return (
             <div className="text-center my-5">
@@ -100,7 +100,10 @@ export default function HotelList({ hotels, showPrice }) {
                             imageUrl={hotel.imageUrl}
                             soldOut={hotel.soldOut}
                             rating={hotel.rating}
-                            showPrice={showPrice}  // ✅ 여기 포인트
+                            showPrice={showPrice}
+                            checkInDate={checkInDate}
+                            checkOutDate={checkOutDate}
+                            guests={guests}
                         />
                     </div>
                 ))}

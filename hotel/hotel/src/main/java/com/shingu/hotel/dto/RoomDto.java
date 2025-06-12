@@ -11,7 +11,7 @@ public class RoomDto {
     private Long id;
     private String roomType;
     private Integer maxOccupancy;
-    private String price;
+    private Double price;
     // 편의 시설
     private String refrigerator; // 냉장고
     private String tv;  // 텔레비전

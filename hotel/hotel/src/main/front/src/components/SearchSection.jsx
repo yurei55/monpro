@@ -1,66 +1,77 @@
-import { useState } from "react";
+// SearchSection.jsx
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function SearchSection({ onSearch }) {
+export default function SearchSection({onSearch, defaultCheckIn, defaultCheckOut, guests: defaultGuests, setGuests, setCheckInDate, setCheckOutDate,}) {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [query, setQuery] = useState("");
-  const [checkInDate, setCheckInDate] = useState(today);
-  const [checkOutDate, setCheckOutDate] = useState(today);
-  const [rooms, setRooms] = useState(1);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
+  const [checkIn, setCheckIn] = useState(defaultCheckIn || today);
+  const [checkOut, setCheckOut] = useState(defaultCheckOut || today);
+  const [rooms, setRooms] = useState(defaultGuests?.rooms || 1);
+  const [adults, setAdults] = useState(defaultGuests?.adults || 1);
+  const [children, setChildren] = useState(defaultGuests?.children || 0);
 
-  const regionToSearch = query.trim();
+  // 외부 상태 동기화
+  useEffect(() => {
+    setCheckInDate?.(checkIn);
+    setCheckOutDate?.(checkOut);
+    setGuests?.({ rooms, adults, children });
+  }, [checkIn, checkOut, rooms, adults, children]);
 
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;
-    setCheckInDate(newCheckIn);
-    if (newCheckIn > checkOutDate) {
-      setCheckOutDate(newCheckIn);
+    setCheckIn(newCheckIn);
+    if (newCheckIn > checkOut) {
+      setCheckOut(newCheckIn);
     }
   };
 
   const handleCheckOutChange = (e) => {
     const newCheckOut = e.target.value;
-    if (newCheckOut >= checkInDate) {
-      setCheckOutDate(newCheckOut);
+    if (newCheckOut >= checkIn) {
+      setCheckOut(newCheckOut);
     }
   };
 
-  const updateGuestText = () => {
-    return `객실 ${rooms}, 성인 ${adults}, 아동 ${children}`;
-  };
+  const updateGuestText = () =>
+      `객실 ${rooms}, 성인 ${adults}, 아동 ${children}`;
 
   const handleSearchClick = () => {
-    if (!checkInDate || !checkOutDate) {
+    if (!checkIn || !checkOut) {
       alert("체크인과 체크아웃 날짜를 선택하세요.");
       return;
     }
 
     const params = new URLSearchParams({
-      region: regionToSearch,
-      checkIn: checkInDate,
-      checkOut: checkOutDate,
+      region: query.trim(),
+      checkIn,
+      checkOut,
       roomCount: rooms,
       adultCount: adults,
       childCount: children,
     });
 
     if (onSearch) {
-      // MainPage에서 검색 시
       onSearch(Object.fromEntries(params));
     } else {
-      // SearchResultPage에서 검색 시
-      navigate(`/search?${params.toString()}`);
+      navigate(`/search?${params.toString()}`, {
+        state: {
+          checkInDate: checkIn,
+          checkOutDate: checkOut,
+          guests: {
+            rooms,
+            adults,
+            children,
+          },
+        },
+      });
     }
   };
-
 
   return (
       <section className="container my-4">
         <div className="row g-2">
-          {/* 지역 검색 */}
           <div className="col-md">
             <input
                 type="text"
@@ -70,30 +81,24 @@ export default function SearchSection({ onSearch }) {
                 onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-
-          {/* 체크인 날짜 */}
           <div className="col-md">
             <input
                 type="date"
                 className="form-control"
-                value={checkInDate}
+                value={checkIn}
                 min={today}
                 onChange={handleCheckInChange}
             />
           </div>
-
-          {/* 체크아웃 날짜 */}
           <div className="col-md">
             <input
                 type="date"
                 className="form-control"
-                value={checkOutDate}
-                min={checkInDate}
+                value={checkOut}
+                min={checkIn}
                 onChange={handleCheckOutChange}
             />
           </div>
-
-          {/* 인원 수 드롭다운 */}
           <div className="col-md dropdown">
             <button
                 className="btn btn-outline-secondary dropdown-toggle w-100"
@@ -135,8 +140,6 @@ export default function SearchSection({ onSearch }) {
               </li>
             </ul>
           </div>
-
-          {/* 검색 버튼 */}
           <div className="col-md">
             <button className="btn btn-primary w-100" onClick={handleSearchClick}>
               검색
