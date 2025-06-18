@@ -9,7 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
-    Optional<RoomEntity> findByRoomTypeAndHotelId(String roomType, Long hotelId);//unll 안전성 추가
+    // 여러 결과를 받을 수 있게 List로 수정
+    List<RoomEntity> findByRoomTypeAndHotelId(String roomType, Long hotelId);//unll 안전성 추가
     // 특정 호텔의 객실 전체 조회용
     List<RoomEntity> findByHotelId(Long hotelId);
 }

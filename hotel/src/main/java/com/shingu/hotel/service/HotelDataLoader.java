@@ -4,6 +4,7 @@ import com.shingu.hotel.entity.HotelEntity;
 import com.shingu.hotel.entity.RoomEntity;
 import com.shingu.hotel.repository.HotelRepository;
 import com.shingu.hotel.repository.ReservationRepository;
+import com.shingu.hotel.repository.ReviewRepository;
 import com.shingu.hotel.repository.RoomRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,13 @@ public class HotelDataLoader {
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
+    private final ReviewRepository reviewRepository;
+    private long hotelId = 28013;
+    private long roomId = 165;
 
     @PostConstruct
     public void init() {
+        reviewRepository.deleteAll();
         reservationRepository.deleteAll();
         roomRepository.deleteAll();
         hotelRepository.deleteAll();
@@ -127,7 +132,6 @@ public class HotelDataLoader {
                     Map.entry("쉐라톤 그랜드 인천 호텔-3인실", "https://your-bucket.s3.amazonaws.com/SheratonGrandIncheonHotelTriple.jpg")
             );
 
-            long hotelId = 28013;
 
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",", -1);
@@ -167,7 +171,9 @@ public class HotelDataLoader {
     private void createRoomIfAvailable(HotelEntity hotel, String[] values, int hasRoomIndex, int priceIndex,
                                        String roomType, int people, Map<String, String> hotelRoomImageMap) {
         if ("Y".equalsIgnoreCase(values[hasRoomIndex]) || "있음".equalsIgnoreCase(values[hasRoomIndex].trim())) {
+
             RoomEntity room = new RoomEntity();
+            room.setId(roomId++);
             room.setHotel(hotel);
             room.setRoomType(roomType);
             room.setMaxOccupancy(people);

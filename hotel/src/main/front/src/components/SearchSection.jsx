@@ -20,22 +20,20 @@ export default function SearchSection({
   const tomorrow = tomorrowObj.toISOString().split("T")[0];
 
   const [query, setQuery] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-
-  useEffect(() => {
-    setCheckIn(defaultCheckIn || today);
-    setCheckOut(defaultCheckOut || tomorrow);
-  }, [defaultCheckIn, defaultCheckOut]);
+  const [checkIn, setCheckIn] = useState(defaultCheckIn || today);
+  const [checkOut, setCheckOut] = useState(defaultCheckOut || tomorrow);
   const [rooms, setRooms] = useState(defaultGuests?.rooms || 1);
   const [adults, setAdults] = useState(defaultGuests?.adults || 1);
   const [children, setChildren] = useState(defaultGuests?.children || 0);
 
   useEffect(() => {
-    setCheckInDate?.(checkIn);
-    setCheckOutDate?.(checkOut);
-    setGuests?.({ rooms, adults, children });
-  }, [checkIn, checkOut, rooms, adults, children]);
+    if (setCheckInDate) setCheckInDate(checkIn);
+    if (setCheckOutDate) setCheckOutDate(checkOut);
+  }, [checkIn, checkOut]);
+
+  useEffect(() => {
+    if (setGuests) setGuests({ rooms, adults, children });
+  }, [rooms, adults, children]);
 
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;

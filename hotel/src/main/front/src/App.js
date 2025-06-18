@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 // ...other imports
 import SearchResultPage from "./pages/SearchResultPage";
 import HotelDetailPage  from "./pages/HotelDetailPage";
+import ReviewPage from "./pages/ReviewPage";
 
 function App() {
     return (
@@ -24,10 +25,11 @@ function App() {
                 <Route path="/join" element={<JoinPage />} />
                 <Route path="/payment" element={<PaymentPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/comfirmation" element={<ConfirmationPage />} />
+                <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/orders" element={<ReservationPage />} />
                 <Route path="/" element={<MainPage />} />
                 <Route path="/hotels/:id" element={<HotelDetailPage />} />
+                <Route path="/review" element={<ReviewPage />} />
                 {/* ...other routes */}
             </Routes>
         </Router>

@@ -1,30 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../api/axios";
 
 function ReservationPage() {
   const [reservations, setReservations] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const currentUser = localStorage.getItem("currentUser");
-    if (!currentUser) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
+    const fetchReservations = async () => {
+      const currentUser = localStorage.getItem("currentUser");
+      if (!currentUser) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
 
-    axios
-        .get("/api/reservations/my", { withCredentials: true })
-        .then((res) => {
-          // ✅ status가 CANCELLED가 아닌 예약만 보여줌
-          const filtered = res.data.filter((r) => r.status !== "CANCELLED");
-          setReservations(filtered);
-        })
-        .catch((err) => {
-          console.error("예약 정보 불러오기 실패:", err);
-          setReservations([]);
-        });
+      try {
+        const res = await axios.get("/api/reservations/my", { withCredentials: true });
+        const filtered = res.data.filter((r) => r.status !== "CANCELLED");
+
+        // roomId를 백엔드에서 받아오기
+        let roomId = null;
+        try {
+          const roomRes = await axios.get("/api/rooms/hotel/28021");
+          const room = roomRes.data.find((r) => r.roomType === "1인실");
+          roomId = room?.id;
+        } catch (err) {
+          console.error("roomId 조회 실패:", err);
+        }
+        //  목업 데이터 생성
+        const mockReviewTarget = {
+          reservationId: 999999,
+          hotelId: 28323,
+          hotelName: "선재해림",
+          roomId,
+          roomType: "2인실",
+          checkInDate: "2025-06-16",
+          checkOutDate: "2025-06-17",
+          numberOfGuests: 2,
+          total: "₩279,000",
+          status: "COMPLETED",
+        };
+
+        setReservations([mockReviewTarget, ...filtered]);
+      } catch (err) {
+        console.error("예약 정보 불러오기 실패:", err);
+        setReservations([]);
+      }
+    };
+
+    fetchReservations();
   }, [navigate]);
 
   const formatDate = (dateStr) => {
@@ -33,6 +58,12 @@ function ReservationPage() {
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
+  };
+
+  // 체크아웃 날짜가 오늘보다 이전인지 판단
+  const isPastDate = (dateStr) => {
+    const today = new Date().toISOString().split("T")[0];
+    return dateStr < today;
   };
 
   const handleCancel = async (reservationId) => {
@@ -92,13 +123,36 @@ function ReservationPage() {
                       </p>
                     </div>
                   </div>
+
+                  {/* ✅ 리뷰 or 취소 버튼 분기 */}
                   <div className="col-md-2 d-flex align-items-center justify-content-center h-100">
-                    <button
-                        className="btn btn-danger"
-                        onClick={() => handleCancel(res.reservationId)}
-                    >
-                      예약취소
-                    </button>
+                    {isPastDate(res.checkOutDate) ? (
+                        <button
+                            className="btn btn-primary"
+                            onClick={() =>
+                                navigate("/review", {
+                                  state: {
+                                    hotel: {
+                                      id: res.hotelId,
+                                      hotelName: res.hotelName,
+                                    },
+                                    reservationDate: `${formatDate(res.checkInDate)} ~ ${formatDate(res.checkOutDate)}`,
+                                    guestCount: res.numberOfGuests,
+                                    room: { id: res.roomId, roomType: res.roomType },
+                                  },
+                                })
+                            }
+                        >
+                          리뷰작성
+                        </button>
+                    ) : (
+                        <button
+                            className="btn btn-danger"
+                            onClick={() => handleCancel(res.reservationId)}
+                        >
+                          예약취소
+                        </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -7,9 +7,10 @@ import lombok.Setter;
 @Setter
 public class ReviewRequest {
     private String hotelName;
-    private String roomType;
+    private Long roomId;
     private String memberName;
     private String memberEmail;
     private double rating;
+    private String title;
     private String content;
 }

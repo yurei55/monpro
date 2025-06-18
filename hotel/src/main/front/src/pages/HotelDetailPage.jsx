@@ -18,10 +18,18 @@ export default function HotelDetailPage() {
     useEffect(() => {
         const fetchHotel = async () => {
             try {
-                const response = await axios.get(`/hotels/${Number(id)}`);
-                const hotelData = response.data;
-                hotelData.id = Number(id); // ✅ hotel.id 명시적으로 추가
-                setHotel(hotelData);
+                const [hotelRes, reviewRes] = await Promise.all([
+                    axios.get(`/hotels/${Number(id)}`),
+                    axios.get(`/api/reviews/hotel/${id}`)
+                ]);
+
+                const hotelData = {
+                    ...hotelRes.data,
+                    id: Number(id),
+                    reviews: reviewRes.data
+                };
+
+                setHotel(hotelData); // ✅ 상태 한 번에 처리
             } catch (err) {
                 console.error("호텔 정보를 불러오지 못했습니다:", err);
             }
@@ -100,10 +108,10 @@ export default function HotelDetailPage() {
                                         {/* 객실 이미지 */}
                                         <div className="room-image me-3">
                                             <img
-                                                src={"/puhaha.png"}
+                                                src={`https://teama-leemw-s3.s3.ap-northeast-3.amazonaws.com/room/img/${room.id}.jpg`}
                                                 className="img-fluid rounded"
                                                 alt={room.roomType}
-                                                style={{ width: "280px", height: "200px", objectFit: "cover" }}
+                                                style={{ width: "280px", height: "200px", objectFit: "cover"}}
                                             />
                                         </div>
 
@@ -191,6 +199,32 @@ export default function HotelDetailPage() {
                             );
                         })}
                 </div>
+                {/* 🔽 리뷰 목록 제목 */}
+                <h4 className="mt-5 mb-3">📝 이용자 리뷰</h4>
+
+                {/* 🔽 리뷰 리스트 반복 */}
+                {hotel.reviews?.length > 0 ? (
+                    hotel.reviews.map((review, index) => {
+                        const date = new Date(review.createdAt); // 혹은 review.date
+                        const year = date.getFullYear();
+                        const month = date.getMonth() + 1;
+
+                        return (
+                            <div key={index} className="card mb-3 p-3 shadow-sm">
+                                <div className="d-flex justify-content-between">
+                                    <div>
+                                        <strong className="text-primary">{'★'.repeat(review.rating)}</strong>
+                                        <span className="ms-2 fw-bold">{review.title}</span>
+                                    </div>
+                                    <small className="text-muted">{`${year}년 ${month}월`}</small>
+                                </div>
+                                <p className="mb-0">{review.content}</p>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p className="text-center fs-5 text-muted">아직 리뷰가 없습니다.</p>
+                )}
             </div>
         </>
     );

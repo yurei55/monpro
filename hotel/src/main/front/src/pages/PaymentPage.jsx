@@ -110,10 +110,10 @@ export default function PaymentPage() {
 
             <div className="card mb-3">
               <img
-                  src={"/puhaha.png"}
+                  src={`https://teama-leemw-s3.s3.ap-northeast-3.amazonaws.com/room/img/165.jpg`}
                   className="card-img-top"
                   alt={room.roomType}
-                  style={{ height: "200px", objectFit: "cover" }}
+                  style={{ height: "200px", objectFit: "cover"}}
               />
               <div className="card-body">
                 <h5 className="card-title">{hotel.hotelName}</h5>
